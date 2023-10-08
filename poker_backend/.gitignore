@@ -1,1 +1,7 @@
+/__pycache__
+
+# Virtual environment
+/backend_venv
+
+# Database
 database.db

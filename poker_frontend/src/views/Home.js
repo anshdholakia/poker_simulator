@@ -25,7 +25,7 @@ function Home() {
                   width="40%"
                   flexDirection="column"
                >
-                  <img src={process.env.PUBLIC_URL + '/poker_chip_logo.png'} alt="Poker Logo" style={{ maxWidth: '80%', height: 'auto' }} />
+                  <img src={process.env.PUBLIC_URL + '/poker_chip_logo.png'} alt="Poker Logo" style={{ maxWidth: '100%', height: 'auto' }} />
                   <Typography component="h1" variant="h5" style={{ color: 'white', WebkitTextStroke: '1px black' }}>
                      Poker Simulator. Click on the following options:
                   </Typography>

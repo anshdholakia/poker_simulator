@@ -6,8 +6,9 @@ Base = declarative_base()
 
 DATABASE_URL = "sqlite:///./database.db"
 
+
 class Room(Base):
     __tablename__ = "rooms"
     id = Column(String, primary_key=True, index=True, unique=True)
     # Add other columns as necessary, e.g., game state, player count, etc.
-    uuid = Column(String, primary_key=False, unique=True)
+    room_id = Column(String, primary_key=False, unique=True)
