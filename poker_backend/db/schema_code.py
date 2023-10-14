@@ -4,8 +4,11 @@ from sqlalchemy.orm import sessionmaker, relationship
 
 Base = declarative_base()
 
-DATABASE_URL = "sqlite:///./database.db"
-
+class User(Base):
+    __tablename__ = "user_information"
+    id = Column(Integer, primary_key=True, index=True, unique=True)
+    username = Column(String, index=True, unique=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
 
 class Room(Base):
     __tablename__ = "rooms"

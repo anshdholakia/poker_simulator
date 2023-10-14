@@ -1,7 +1,8 @@
-####################################################
-# local_setup file - used to setup dev environment
-# Built-in modules -> 3rd party modules -> custom modules
-####################################################
+#############################
+#### Local_setup.py - for local setup
+#### Built in -> 3rd party -> Custom Modules
+#############################
+
 import os
 import subprocess
 
@@ -21,17 +22,22 @@ else:
 print("Installing requirements...")
 
 activate_script = 'activate.bat'
-
-# Construct the path to the activate script
 activate_path = os.path.join(venv_path, 'Scripts', activate_script)
 
-# Commands to activate the virtual environment and install requirements
-commands = [
-    f'{activate_path}', 
-    f'pip install -r {os.path.join(poker_backend_path, "requirements.txt")}'
-]
+# Command to activate the virtual environment
+subprocess.check_call(f'{activate_path} && pip install -r {os.path.join(poker_backend_path, "requirements.txt")}', shell=True)
 
-# Run the commands
-subprocess.check_call(' && '.join(commands), shell=True)
+# Make environment variables
+os.environ['DATABASE_URL'] = "sqlite:///db/database.db"
+
+# Check if database exists, if not create it
+db_path = os.path.join(poker_backend_path, 'db', 'database.db')
+if not os.path.exists(db_path):
+    print("Creating database...")
+    open(db_path, 'w').close()
+
+# Run FastAPI
+print("Starting FastAPI server...")
+subprocess.check_call(f'{activate_path} && uvicorn main:app --reload', shell=True)
 
 print("Setup complete!")

@@ -1,5 +1,6 @@
 # Pycache
-/__pycache__
+__pycache__
+*/__pycache__
 
 # Virtual environment
 /backend_venv
