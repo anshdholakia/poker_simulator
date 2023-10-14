@@ -6,7 +6,7 @@ const PopupComponent = ({ isOpen, onClose, message }) => {
     const { register, handleSubmit, formState: { errors } } = useForm();
 
     const onSubmit = data => {
-        console.log(data); // Submit or process the data as needed
+        console.log(data);
         onClose();
     };
 
@@ -16,7 +16,7 @@ const PopupComponent = ({ isOpen, onClose, message }) => {
             <DialogContent>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     {message === 'signup' && (
-                        <TextField 
+                        <TextField
                             fullWidth
                             label="Username"
                             {...register("userName", { required: "User Name is required." })}
@@ -24,14 +24,14 @@ const PopupComponent = ({ isOpen, onClose, message }) => {
                             error={Boolean(errors.fullName)}
                         />
                     )}
-                    <TextField 
+                    <TextField
                         fullWidth
                         label="Email"
                         {...register("email", { required: "Email is required." })}
                         helperText={errors.email?.message}
                         error={Boolean(errors.email)}
                     />
-                    <TextField 
+                    <TextField
                         fullWidth
                         type="password"
                         label="Password"
