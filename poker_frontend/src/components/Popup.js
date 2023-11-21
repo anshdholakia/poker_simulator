@@ -2,11 +2,30 @@ import { React, useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import Snackbar from '@mui/material/Snackbar';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Alert from './Alert';
 import axios from "axios";
 
 
 const PopupComponent = ({ isOpen, onClose, message, setLoggedIn }) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
+    const handleClickShowConfirmPassword = () => {
+        setShowConfirmPassword(!showConfirmPassword);
+    };
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+
     const [open, setOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [severity, setSeverity] = useState("success");
@@ -29,6 +48,10 @@ const PopupComponent = ({ isOpen, onClose, message, setLoggedIn }) => {
     const onSubmit = data => {
         // check if keys in data contains username or not
         if (message === 'signup') {
+            if (data.password !== data.confirmPassword) {
+                handleOpen("Passwords do not match", "error");
+                return; // Stop the form submission if passwords do not match
+            }
             // use axios to send post request to the backend
             axios.post('http://localhost:8000/api/signup', data).then(res => {
                 handleOpen("Success! Account created!", "success");
@@ -77,13 +100,55 @@ const PopupComponent = ({ isOpen, onClose, message, setLoggedIn }) => {
                         />
                         <TextField
                             fullWidth
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             label="Password"
                             {...register("password", { required: "Password is required." })}
                             helperText={errors.password?.message}
                             error={Boolean(errors.password)}
                             style={{ marginBottom: "20px" }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
+
+                        {message === 'signup' && (
+                            <TextField
+                                fullWidth
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                label="Retype Password"
+                                {...register("confirmPassword", {
+                                    required: "Please retype your password.",
+                                })}
+                                helperText={errors.confirmPassword?.message}
+                                error={Boolean(errors.confirmPassword)}
+                                style={{ marginBottom: "20px" }}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle confirm password visibility"
+                                                onClick={handleClickShowConfirmPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                            >
+                                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        )}
                         <DialogActions>
                             <Button onClick={onClose} color="primary">
                                 Cancel
