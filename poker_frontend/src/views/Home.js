@@ -1,11 +1,12 @@
 import { React, useState } from 'react';
 import { Button, Container, Typography, Box, AppBar, Toolbar } from '@mui/material';
-import PopupComponent from '../components/popup_modal';
+import PopupComponent from '../components/Popup';
 import { PlayCircleOutline } from '@mui/icons-material';
 
 function Home() {
     const [isPopupOpen, setPopupOpen] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
+    const [loggedIn, setLoggedIn] = useState("");
 
     const handleLoginClick = () => {
         setPopupMessage('login');
@@ -16,6 +17,10 @@ function Home() {
         setPopupMessage('signup');
         setPopupOpen(true);
     };
+
+    const handleLogoffClick = () => {
+        setLoggedIn("");
+    }
     return (
         <>
             <AppBar position="static">
@@ -23,9 +28,19 @@ function Home() {
                     <Typography variant="h6" style={{ flexGrow: 1 }}>
                         Poker Simulator
                     </Typography>
-                    <Button color="inherit" onClick={handleLoginClick}>Login</Button>
-                    <Button color="inherit" onClick={handleSignupClick}>Signup</Button>
-                    <PopupComponent isOpen={isPopupOpen} onClose={() => setPopupOpen(false)} message={popupMessage} />
+                    {loggedIn === "" ? (
+                        <>
+                            <Button color="inherit" onClick={handleLoginClick} style={{border: '2px solid white', marginRight: '10px'}}>Login</Button>
+                            <Button color="inherit" onClick={handleSignupClick} style={{border: '2px solid white'}}>Signup</Button>
+
+                        </>
+                    ) : <>
+                        <Typography variant='h7' style={{marginRight: '10px'}}>
+                            Welcome {loggedIn}!
+                        </Typography>
+                        <Button color="inherit" onClick={handleLogoffClick} style={{border: '2px solid white'}}>Logoff</Button>
+                    </>}
+                    <PopupComponent isOpen={isPopupOpen} onClose={() => setPopupOpen(false)} message={popupMessage} setLoggedIn={setLoggedIn} />
                 </Toolbar>
             </AppBar>
             <Container style={{
