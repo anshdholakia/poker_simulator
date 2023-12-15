@@ -1,11 +1,25 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
+import axios from 'axios';
 import { Button, Container, Typography, Box, AppBar, Toolbar } from '@mui/material';
 import PopupComponent from '../components/Popup';
 import { PlayCircleOutline } from '@mui/icons-material';
 
+function checkCookie(cookieName) {
+    let cookies = document.cookie.split(';');
+    for(let i = 0; i < cookies.length; i++) {
+        let cookie = cookies[i];
+        let [name, value] = cookie.trim().split('=');
+        console.log(name);
+        if(name === cookieName) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function Home() {
     const [isPopupOpen, setPopupOpen] = useState(false);
-    const [popupMessage, setPopupMessage] = useState('');
+    const [popupMessage, setPopupMessage] = useState("");
     const [loggedIn, setLoggedIn] = useState("");
 
     const handleLoginClick = () => {
@@ -19,8 +33,22 @@ function Home() {
     };
 
     const handleLogoffClick = () => {
+        axios.post('http://localhost:8000/api/logout')
         setLoggedIn("");
     }
+
+    useEffect(() => {
+        checkCookie("");
+        axios.get('http://localhost:8000/api/verifyToken', { withCredentials: true })
+            .then(res => {
+                console.log(res.data);
+                setLoggedIn(true);
+            })
+            .catch(error => {
+                setLoggedIn("");
+            });
+    }, []);
+
     return (
         <>
             <AppBar position="static">

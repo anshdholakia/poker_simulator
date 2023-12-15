@@ -2,6 +2,9 @@
 __pycache__
 */__pycache__
 
+# env file
+.env
+
 # Virtual environment
 /backend_venv
 

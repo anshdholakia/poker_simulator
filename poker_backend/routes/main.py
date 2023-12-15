@@ -1,15 +1,20 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine
 from models import Base, DATABASE_URL
 import uuid
 
+
+#### Main Routes ####
 app = FastAPI()
 
-@app.post("/create-room")
-async def create_room():
-    room_id = str(uuid.uuid4())
-    # Normally, you would save this Room ID in a database, associating it with the relevant game data.
-    return {"room_id": room_id}
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000/"],  # Adjust with your frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 def startup_event():
