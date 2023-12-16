@@ -53,19 +53,26 @@ const PopupComponent = ({ isOpen, onClose, message, setLoggedIn }) => {
                 return; // Stop the form submission if passwords do not match
             }
             // use axios to send post request to the backend
-            axios.post('http://localhost:8000/api/signup', data).then(res => {
+            axios.post('http://localhost:8000/api/signup', data, { withCredentials: true }).then(res => {
                 handleOpen("Success! Account created!", "success");
                 setLoggedIn(data.username);
             }).catch(res => {
                 handleOpen(`Error: ${res.response.status}! ${res.response.data.detail}`, "error");
             });
-        } else {
+        } else if (message === "login") {
             // use axios to send get request to the backend
-            axios.post('http://localhost:8000/api/login', data).then(res => {
+            axios.post('http://localhost:8000/api/login', data, { withCredentials: true }).then(res => {
                 handleOpen("Logged in!", "success");
                 setLoggedIn(res.data.username);
             }).catch(res => {
                 handleOpen(`Error: ${res.response.status}! ${res.response.data.detail}`, "error");
+            });
+        } else if (message === "logout") {
+            axios.post('http://localhost:8000/api/logout', {}, { withCredentials: true }).then(res => {
+                handleOpen(res.data.message, "error");
+                setLoggedIn("");
+            }).catch(res => {
+                handleOpen("Could not logout", "error");
             });
         }
 
@@ -75,7 +82,7 @@ const PopupComponent = ({ isOpen, onClose, message, setLoggedIn }) => {
     return (
         <>
             <Dialog open={isOpen} onClose={onClose} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title" style={{ marginBottom: "20px", zIndex: 0 }}>{message === 'login' ? 'Login' : 'Signup'}</DialogTitle>
+                <DialogTitle id="form-dialog-title" style={{ marginBottom: "20px", zIndex: 0 }}>{message === 'login' ? 'Login' : (message === 'signup' ? 'Signup' : 'Logout')}</DialogTitle>
                 <DialogContent>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         {message === 'signup' && (
@@ -89,38 +96,42 @@ const PopupComponent = ({ isOpen, onClose, message, setLoggedIn }) => {
                                 style={{ marginBottom: "20px" }}
                             />
                         )}
-                        <TextField
-                            fullWidth
-                            type="email"
-                            label="Email"
-                            {...register("email", { required: "Email is required." })}
-                            helperText={errors.email?.message}
-                            error={Boolean(errors.email)}
-                            style={{ marginBottom: "20px" }}
-                        />
-                        <TextField
-                            fullWidth
-                            type={showPassword ? 'text' : 'password'}
-                            label="Password"
-                            {...register("password", { required: "Password is required." })}
-                            helperText={errors.password?.message}
-                            error={Boolean(errors.password)}
-                            style={{ marginBottom: "20px" }}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
-                                            edge="end"
-                                        >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
+                        {(message === 'signup' || message == 'login') && (
+                            <>
+                                <TextField
+                                    fullWidth
+                                    type="email"
+                                    label="Email"
+                                    {...register("email", { required: "Email is required." })}
+                                    helperText={errors.email?.message}
+                                    error={Boolean(errors.email)}
+                                    style={{ marginBottom: "20px" }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    type={showPassword ? 'text' : 'password'}
+                                    label="Password"
+                                    {...register("password", { required: "Password is required." })}
+                                    helperText={errors.password?.message}
+                                    error={Boolean(errors.password)}
+                                    style={{ marginBottom: "20px" }}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={handleClickShowPassword}
+                                                    onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </>
+                        )}
 
                         {message === 'signup' && (
                             <TextField
@@ -154,7 +165,7 @@ const PopupComponent = ({ isOpen, onClose, message, setLoggedIn }) => {
                                 Cancel
                             </Button>
                             <Button type="submit" color="primary">
-                                {message === 'login' ? 'Login' : 'Signup'}
+                                {message === 'login' ? 'Login' : (message === 'signup' ? 'Signup' : 'Logout')}
                             </Button>
                         </DialogActions>
                     </form>

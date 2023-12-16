@@ -33,16 +33,15 @@ function Home() {
     };
 
     const handleLogoffClick = () => {
-        axios.post('http://localhost:8000/api/logout')
-        setLoggedIn("");
+        setPopupMessage('logout');
+        setPopupOpen(true);
     }
 
     useEffect(() => {
         checkCookie("");
         axios.get('http://localhost:8000/api/verifyToken', { withCredentials: true })
             .then(res => {
-                console.log(res.data);
-                setLoggedIn(true);
+                setLoggedIn(res.data.username);
             })
             .catch(error => {
                 setLoggedIn("");
