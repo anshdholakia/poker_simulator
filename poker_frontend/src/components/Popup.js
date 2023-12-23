@@ -10,7 +10,7 @@ import Alert from './Alert';
 import axios from "axios";
 
 
-const PopupComponent = ({ isOpen, onClose, message, setLoggedIn }) => {
+const PopupComponent = ({ isOpen, onClose, message, setLoggedIn, onSuccess }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -71,6 +71,7 @@ const PopupComponent = ({ isOpen, onClose, message, setLoggedIn }) => {
             axios.post('http://localhost:8000/api/logout', {}, { withCredentials: true }).then(res => {
                 handleOpen(res.data.message, "error");
                 setLoggedIn("");
+                onSuccess();
             }).catch(res => {
                 handleOpen("Could not logout", "error");
             });
@@ -96,7 +97,7 @@ const PopupComponent = ({ isOpen, onClose, message, setLoggedIn }) => {
                                 style={{ marginBottom: "20px" }}
                             />
                         )}
-                        {(message === 'signup' || message == 'login') && (
+                        {(message === 'signup' || message === 'login') && (
                             <>
                                 <TextField
                                     fullWidth

@@ -7,11 +7,8 @@ from pydantic import BaseModel
 #### Define all pydantic models ####
 
 
-class UserInformation(BaseModel):
-    username: str = ""
-    password: str
-    email: str = ""
-
-
-class TokenData(BaseModel):
-    username: str = None
+class RoomInformation(BaseModel):
+    room_name: str
+    lower_blind: int
+    upper_blind: int
+    initial_bid: int

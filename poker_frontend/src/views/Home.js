@@ -3,22 +3,12 @@ import axios from 'axios';
 import { Button, Container, Typography, Box, AppBar, Toolbar } from '@mui/material';
 import PopupComponent from '../components/Popup';
 import { PlayCircleOutline } from '@mui/icons-material';
-
-function checkCookie(cookieName) {
-    let cookies = document.cookie.split(';');
-    for(let i = 0; i < cookies.length; i++) {
-        let cookie = cookies[i];
-        let [name, value] = cookie.trim().split('=');
-        console.log(name);
-        if(name === cookieName) {
-            return true;
-        }
-    }
-    return false;
-}
+import CreateRoomForm from '../components/CreateRoomForm';
 
 function Home() {
+
     const [isPopupOpen, setPopupOpen] = useState(false);
+    const [isCreateRoomForm, setCreateRoomForm] = useState(false);
     const [popupMessage, setPopupMessage] = useState("");
     const [loggedIn, setLoggedIn] = useState("");
 
@@ -38,7 +28,6 @@ function Home() {
     }
 
     useEffect(() => {
-        checkCookie("");
         axios.get('http://localhost:8000/api/verifyToken', { withCredentials: true })
             .then(res => {
                 setLoggedIn(res.data.username);
@@ -57,17 +46,18 @@ function Home() {
                     </Typography>
                     {loggedIn === "" ? (
                         <>
-                            <Button color="inherit" onClick={handleLoginClick} style={{border: '2px solid white', marginRight: '10px'}}>Login</Button>
-                            <Button color="inherit" onClick={handleSignupClick} style={{border: '2px solid white'}}>Signup</Button>
+                            <Button color="inherit" onClick={handleLoginClick} style={{ border: '2px solid white', marginRight: '10px' }}>Login</Button>
+                            <Button color="inherit" onClick={handleSignupClick} style={{ border: '2px solid white' }}>Signup</Button>
 
+                            <PopupComponent isOpen={isPopupOpen} onClose={() => setPopupOpen(false)} message={popupMessage} setLoggedIn={setLoggedIn} />
                         </>
                     ) : <>
-                        <Typography variant='h7' style={{marginRight: '10px'}}>
+                        <Typography variant='h7' style={{ marginRight: '10px' }}>
                             Welcome {loggedIn}!
                         </Typography>
-                        <Button color="inherit" onClick={handleLogoffClick} style={{border: '2px solid white'}}>Logoff</Button>
+                        <Button color="inherit" onClick={handleLogoffClick} style={{ border: '2px solid white' }}>Logoff</Button>
+                        <PopupComponent isOpen={isPopupOpen} onClose={() => setPopupOpen(false)} message={popupMessage} setLoggedIn={setLoggedIn} onSuccess={()=>{setCreateRoomForm(false)}}/>
                     </>}
-                    <PopupComponent isOpen={isPopupOpen} onClose={() => setPopupOpen(false)} message={popupMessage} setLoggedIn={setLoggedIn} />
                 </Toolbar>
             </AppBar>
             <Container style={{
@@ -80,69 +70,77 @@ function Home() {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
             }}>
-                <Box flexGrow={1} display="flex" justifyContent="center"
-                    alignItems="center" flexDirection="row" width="100%">
-                    <Container>
-                        <Box
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            margin="auto"
-                            width="40%"
-                            flexDirection="column"
-                        >
-                            <img src={process.env.PUBLIC_URL + '/poker_chip_logo.png'} alt="Poker Logo" style={{ maxWidth: '100%', height: 'auto' }} />
-                            <Typography component="h1" variant="h5" style={{ color: 'white', WebkitTextStroke: '1px black' }}>
-                                Poker Simulator. Click on the following options:
-                            </Typography>
-                        </Box>
-                    </Container>
-                    <Container component="main" style={{ marginTop: '2rem', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <Box
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            margin="auto"
-                            width="50%"
-                            flexDirection="column"
-                        >
-                            <img src={process.env.PUBLIC_URL + '/poker_dealer.png'} alt="Poker Dealer" style={{ maxWidth: '80%', height: 'auto' }} />
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<PlayCircleOutline />}
-                                style={{ marginTop: '1rem', margin: 'auto' }}
+                {!isCreateRoomForm || loggedIn === "" ?
+                    <Box flexGrow={1} display="flex" justifyContent="center"
+                        alignItems="center" flexDirection="row" width="100%">
+                        <Container>
+                            <Box
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                margin="auto"
+                                width="40%"
+                                flexDirection="column"
                             >
-                                Create a Room
-                            </Button>
-                        </Box>
-                        <Box
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            margin="auto"
-                            width="50%"
-                            flexDirection="column"
-                        >
-                            <img src={process.env.PUBLIC_URL + '/playing_poker_clipart.png'} alt="Poker Dealer" style={{ maxWidth: '77%', height: 'auto' }} />
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<PlayCircleOutline />}
-                                style={{ marginTop: '10px' }}
+                                <img src={process.env.PUBLIC_URL + '/poker_chip_logo.png'} alt="Poker Logo" style={{ maxWidth: '100%', height: 'auto' }} />
+                                <Typography component="h1" variant="h5" style={{ color: 'white', WebkitTextStroke: '1px black' }}>
+                                    Poker Simulator. Click on the following options:
+                                </Typography>
+                            </Box>
+                        </Container>
+                        <Container component="main" style={{ marginTop: '2rem', textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <Box
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                margin="auto"
+                                width="50%"
+                                flexDirection="column"
                             >
-                                Join a Room
-                            </Button>
-                        </Box>
-                    </Container>
-                </Box>
-
-                <footer style={{ textAlign: 'center', width: '100%', backgroundColor: 'gray' }}>
-                    <Typography variant="body2" color="textSecondary">
-                        © 2023 PokerWebsite
-                    </Typography>
-                </footer>
+                                <img src={process.env.PUBLIC_URL + '/poker_dealer.png'} alt="Poker Dealer" style={{ maxWidth: '80%', height: 'auto' }} />
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<PlayCircleOutline />}
+                                    style={{ marginTop: '1rem', margin: 'auto' }}
+                                    disabled={!loggedIn}
+                                    onClick={() => setCreateRoomForm(true)}
+                                >
+                                    Create a Room
+                                </Button>
+                            </Box>
+                            <Box
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                margin="auto"
+                                width="50%"
+                                flexDirection="column"
+                            >
+                                <img src={process.env.PUBLIC_URL + '/playing_poker_clipart.png'} alt="Poker Dealer" style={{ maxWidth: '77%', height: 'auto' }} />
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<PlayCircleOutline />}
+                                    style={{ marginTop: '10px' }}
+                                    disabled={!loggedIn}
+                                >
+                                    Join a Room
+                                </Button>
+                            </Box>
+                        </Container>
+                    </Box>
+                    :
+                    <CreateRoomForm onClose={() => setCreateRoomForm(false)} />
+                }
             </Container>
+
+
+            <footer style={{ textAlign: 'center', width: '100%', backgroundColor: 'gray' }}>
+                <Typography variant="body2" color="textSecondary">
+                    © 2023 PokerWebsite
+                </Typography>
+            </footer>
         </>
     );
 }

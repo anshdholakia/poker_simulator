@@ -20,6 +20,10 @@ app.add_middleware(
 def startup_event():
     engine = create_engine(DATABASE_URL)
     Base.metadata.create_all(bind=engine)
+    
+@app.get('/')
+def main():
+    return {"message": "Poker Backend is running!"}
 
 
 

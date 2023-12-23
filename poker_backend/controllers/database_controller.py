@@ -7,7 +7,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
-from db.schema_code import User
+from db.schema_code import User, Rooms
 
 engine = create_engine(os.environ["DATABASE_URL"])
 SessionLocal = sessionmaker(bind=engine)
@@ -16,15 +16,15 @@ SessionLocal = sessionmaker(bind=engine)
 def create_user_account(username: str, email: str, hashed_password: str):
     """
     Create a row in the user_information table.
-    
+
     Parameters:
         username (str)
         email (str)
         password (str)
-    
+
     Returns:
         None
-    
+
     Raises:
         Exception: If error in adding row.
     """
@@ -44,21 +44,22 @@ def create_user_account(username: str, email: str, hashed_password: str):
 def get_user_account(username: str = "", email: str = "", hashed_password: str = "") -> dict:
     """
     Get a user entry from the user_information table.
-    
+
     Parameters:
         username (str)
         email (str)
         hashed_password (str)
-    
+
     Returns:
         dict: A dictionary of row returned by the query.
-    
+
     Raises:
         Exception: If error in getting a row.
     """
     session = SessionLocal()
     try:
-        statement = select(User).where(User.email==email, User.hashed_password==hashed_password)
+        statement = select(User).where(User.email == email,
+                           User.hashed_password == hashed_password)
         rows = session.execute(statement).all()
         if not rows:
             # No rows are found
@@ -70,3 +71,29 @@ def get_user_account(username: str = "", email: str = "", hashed_password: str =
     finally:
         session.close()
     return rows[0]
+
+
+def get_all_room_information():
+    """
+    Get all room information from the room_information table.
+
+    Parameters:
+        None
+
+    Returns:
+        dict: A dictionary of row returned by the query.
+
+    Raises:
+        Exception: If error in getting a row.
+    """
+    session = SessionLocal()
+    try:
+        statement = select(Rooms)
+        rows = session.execute(statement).all()
+        rows = [row[0].__dict__ for row in rows]
+    except Exception as e:
+        session.rollback()
+        raise Exception(e)
+    finally:
+        session.close()
+    return rows
